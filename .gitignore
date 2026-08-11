@@ -1,0 +1,4 @@
+osint/.env
+osint/.venv/
+osint/__pycache__/
+__pycache__/
