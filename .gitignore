@@ -1,4 +1,6 @@
 osint/.env
 osint/.venv/
 osint/__pycache__/
+osint/results.json
 __pycache__/
+osint/test_domaines.csv

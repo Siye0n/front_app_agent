@@ -3,40 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OSINT Entreprises</title>
+  <title>OSINT // SCAN WHOIS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=JetBrains+Mono:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <main class="container">
-    <header>
-      <h1>🔎 OSINT Entreprises</h1>
-      <p class="subtitle">Récupère les premières entreprises d'une ville (nom, adresse, site web).</p>
+  <div class="grid-overlay"></div>
+
+  <main class="dashboard">
+    <header class="dash-header">
+      <h1>OSINT <span class="slash">//</span> SCAN WHOIS</h1>
+      <p class="subtitle">Analyse de renseignement — empreinte de domaines via protocole WHOIS (port 43)</p>
     </header>
 
-    <section class="search-bar">
-      <label for="ville">Ville</label>
-      <input type="text" id="ville" name="ville" placeholder="Ex : Paris" autocomplete="off">
+    <!-- Zone d'upload -->
+    <section class="panel upload-panel">
+      <div id="dropzone" class="dropzone">
+        <div class="dropzone-inner">
+          <div class="dropzone-icon">⛓</div>
+          <p class="dropzone-text">Glissez-déposez un fichier <strong>CSV</strong> ici</p>
+          <p class="dropzone-hint">ou</p>
+          <label class="file-btn">
+            Choisir un fichier CSV
+            <input type="file" id="csv-input" accept=".csv,text/csv,text/plain" hidden>
+          </label>
+        </div>
+        <div id="file-info" class="file-info" hidden></div>
+      </div>
 
-      <label for="limit">Nombre (max 50)</label>
-      <input type="number" id="limit" name="limit" value="10" min="1" max="50">
+      <div class="scan-actions">
+        <button id="scan-btn" type="button" disabled>LANCER LE SCAN</button>
+        <button id="clear-btn" type="button" class="ghost" hidden>Effacer</button>
+      </div>
 
-      <button id="rechercher" type="button">Rechercher</button>
+      <!-- Barre de progression / compteur -->
+      <div id="progress" class="progress" hidden>
+        <div class="progress-bar"><span id="progress-fill" class="progress-fill"></span></div>
+        <div id="progress-label" class="progress-label">0 / 0 domaines scannés</div>
+      </div>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
     </section>
 
-    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <!-- Cartes métriques -->
+    <section id="metrics" class="metrics" hidden>
+      <div class="metric-card">
+        <div class="metric-label">Domaines</div>
+        <div id="m-total" class="metric-value">0</div>
+      </div>
+      <div class="metric-card ok">
+        <div class="metric-label">Scan OK</div>
+        <div id="m-ok" class="metric-value">0</div>
+      </div>
+      <div class="metric-card fail">
+        <div class="metric-label">Échecs</div>
+        <div id="m-fail" class="metric-value">0</div>
+      </div>
+      <div class="metric-card soon">
+        <div class="metric-label">Expire bientôt</div>
+        <div id="m-soon" class="metric-value">0</div>
+      </div>
+    </section>
 
-    <section id="results" class="results" hidden>
-      <h2 id="results-title"></h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Nom</th>
-            <th>Adresse</th>
-            <th>Site web</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
+    <!-- Tableau principal -->
+    <section id="results" class="panel results-panel" hidden>
+      <h2 class="results-title">// RÉSULTATS DU SCAN</h2>
+      <div class="table-wrap">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Domaine</th>
+              <th>Registrar</th>
+              <th>Création</th>
+              <th>Expiration</th>
+              <th>Statut</th>
+              <th>DNS</th>
+              <th>Erreur</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
     </section>
   </main>
 
