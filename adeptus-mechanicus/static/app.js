@@ -1,165 +1,168 @@
-/* ============================================================
-   Adeptus Mechanicus — logique du chat de contact (cote serveur)
-   - Charge les messages existants via GET /api/contact
-   - Envoie un nouveau message via POST /api/contact
-   Aucune reponse automatique : le Magos repond hors ligne en
-   lisant messages.json.
-   ============================================================ */
+/* =========================================================
+   Adeptus Mechanicus — canal de communication (chat bilatéral)
+   - Rend les bulles visiteur (droite) / Magos (gauche + aquila)
+   - Fade-in à l'apparition, typing indicator après envoi visiteur
+   - Typing effect progressif pour les messages du Magos
+   - Polling GET /api/contact toutes les ~4s (dernière synchro)
+   ========================================================= */
 
 (function () {
   "use strict";
 
-  const form = document.getElementById("contactForm");
-  const nomInput = document.getElementById("nom");
-  const msgInput = document.getElementById("message");
-  const submitBtn = document.getElementById("submitBtn");
-  const formStatus = document.getElementById("formStatus");
-  const messagesList = document.getElementById("messagesList");
+  var POLL_MS = 4000;          // intervalle de rafraîchissement
+  var TYPING_INDICATOR_MS = 1200; // durée simulation frappe Magos
 
-  // Echappement HTML pour eviter l'injection de markup dans la liste.
-  function escapeHtml(str) {
-    const div = document.createElement("div");
-    div.textContent = str == null ? "" : String(str);
-    return div.innerHTML;
+  var chatLog = document.getElementById("chat-log");
+  var form = document.getElementById("contact-form");
+  var nomInput = document.getElementById("nom");
+  var msgInput = document.getElementById("message");
+  var transmitBtn = document.getElementById("transmit-btn");
+  var typingIndicator = document.getElementById("typing-indicator");
+  var lastSyncEl = document.getElementById("last-sync");
+
+  // IDs déjà affichés (pour ne pas re-rendre / rejouer les animations)
+  var renderedIds = new Set();
+  // Booléen : une réponse Magos vient d'arriver ? (stoppe l'indicateur de frappe)
+  var magosReplied = false;
+
+  function fmtTime(ts) {
+    var d = new Date((ts || 0) * 1000);
+    function p(n) { return (n < 10 ? "0" : "") + n; }
+    return p(d.getHours()) + ":" + p(d.getMinutes());
   }
 
-  // Formatage d'un timestamp (secondes) en date lisible fr.
-  function formatTs(ts) {
-    if (!ts) return "";
-    const d = new Date(ts * 1000);
-    if (isNaN(d.getTime())) return "";
-    return d.toLocaleString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  function aquilaSVG() {
+    return '<svg viewBox="0 0 100 100" aria-hidden="true">' +
+      '<g fill="none" stroke="#36c46a" stroke-width="5">' +
+      '<path d="M50 22 L50 78"/>' +
+      '<path d="M50 30 C34 16 16 18 10 32 C24 33 32 44 38 52"/>' +
+      '<path d="M50 30 C66 16 84 18 90 32 C76 33 68 44 62 52"/>' +
+      '</g><circle cx="50" cy="50" r="4" fill="#36c46a"/></svg>';
   }
 
-  // Cree un element <li> pour un message.
-  function buildMessageNode(m) {
-    const li = document.createElement("li");
-    li.className = "msg";
+  // Affiche une bulle (avec fade-in via classe CSS)
+  function appendBubble(entry) {
+    var isMagos = entry.de === "magos";
+    var row = document.createElement("div");
+    row.className = "bubble-row " + (isMagos ? "magos" : "visiteur");
 
-    const meta = document.createElement("div");
-    meta.className = "msg-meta";
+    var who = isMagos ? "Magos" : (entry.nom && entry.nom.trim() ? entry.nom.trim() : "Visiteur");
 
-    const nom = document.createElement("span");
-    nom.className = "msg-nom";
-    nom.textContent = m.nom || "Inconnu";
-
-    const date = document.createElement("span");
-    date.className = "msg-date";
-    date.textContent = formatTs(m.ts);
-
-    meta.appendChild(nom);
-    meta.appendChild(date);
-
-    const text = document.createElement("p");
-    text.className = "msg-text";
-    text.textContent = m.message || "";
-
-    li.appendChild(meta);
-    li.appendChild(text);
-    return li;
-  }
-
-  // Rend la liste des messages (du plus recent au plus ancien).
-  function renderMessages(messages) {
-    messagesList.innerHTML = "";
-    if (!messages || messages.length === 0) {
-      const empty = document.createElement("li");
-      empty.className = "messages-empty";
-      empty.textContent = "Aucune transmission pour l'instant. Sois le premier à contacter le Magos.";
-      messagesList.appendChild(empty);
-      return;
-    }
-    messages.forEach(function (m) {
-      messagesList.appendChild(buildMessageNode(m));
-    });
-  }
-
-  // Recupere les messages existants depuis le serveur.
-  async function loadMessages() {
-    try {
-      const res = await fetch("/api/contact", { method: "GET" });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const data = await res.json();
-      renderMessages(data);
-    } catch (err) {
-      messagesList.innerHTML = "";
-      const errLi = document.createElement("li");
-      errLi.className = "messages-empty";
-      errLi.textContent = "Impossible de charger les transmissions. Réessaie plus tard.";
-      messagesList.appendChild(errLi);
-    }
-  }
-
-  // Envoi du formulaire.
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
-    const nom = nomInput.value.trim();
-    const message = msgInput.value.trim();
-
-    formStatus.className = "form-status";
-    formStatus.textContent = "";
-
-    if (!message) {
-      formStatus.className = "form-status err";
-      formStatus.textContent = "Le message est requis pour la transmission.";
-      msgInput.focus();
-      return;
+    if (isMagos) {
+      var avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.innerHTML = aquilaSVG();
+      row.appendChild(avatar);
     }
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Transmission…";
+    var bubble = document.createElement("div");
+    bubble.className = "bubble";
+    var whoEl = document.createElement("span");
+    whoEl.className = "who";
+    whoEl.textContent = who;
+    bubble.appendChild(whoEl);
 
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nom: nom, message: message }),
-      });
+    var textEl = document.createElement("span");
+    textEl.className = "text";
+    bubble.appendChild(textEl);
 
-      if (res.status === 400) {
-        formStatus.className = "form-status err";
-        formStatus.textContent = "Message vide — transmission refusée.";
-      } else if (res.ok) {
-        const json = await res.json();
-        formStatus.className = "form-status ok";
-        formStatus.textContent =
-          "Transmission enregistrée (réf #" + json.id + ") — le Magos répondra par canal sécurisé.";
-        msgInput.value = "";
-        // Recharge la liste pour afficher le message cote serveur.
-        await loadMessages();
-      } else {
-        throw new Error("HTTP " + res.status);
+    var tsEl = document.createElement("span");
+    tsEl.className = "ts";
+    tsEl.textContent = fmtTime(entry.ts);
+    bubble.appendChild(tsEl);
+
+    row.appendChild(bubble);
+    chatLog.appendChild(row);
+
+    // Typing effect progressif pour les messages du Magos ; sinon texte direct.
+    if (isMagos && !reducedMotion()) {
+      typeText(textEl, entry.message || "");
+    } else {
+      textEl.textContent = entry.message || "";
+    }
+
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  function typeText(el, text) {
+    // Reveal progressif caractère par caractère (effet terminal binaire).
+    var i = 0;
+    var speed = Math.max(8, Math.min(28, 600 / Math.max(1, text.length)));
+    (function step() {
+      if (i <= text.length) {
+        el.textContent = text.slice(0, i);
+        i++;
+        chatLog.scrollTop = chatLog.scrollHeight;
+        setTimeout(step, speed);
       }
-    } catch (err) {
-      formStatus.className = "form-status err";
-      formStatus.textContent = "Erreur de transmission. Réessaie plus tard.";
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Transmettre";
-    }
+    })();
+  }
+
+  function reducedMotion() {
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  // Affiche l'indicateur de frappe du Magos (puis le cache après délai ou à la réponse)
+  var typingTimer = null;
+  function showTyping() {
+    typingIndicator.hidden = false;
+    chatLog.scrollTop = chatLog.scrollHeight;
+    if (typingTimer) clearTimeout(typingTimer);
+    typingTimer = setTimeout(hideTyping, TYPING_INDICATOR_MS);
+  }
+  function hideTyping() {
+    typingIndicator.hidden = true;
+    if (typingTimer) { clearTimeout(typingTimer); typingTimer = null; }
+  }
+
+  // Charge l'historique fusionné et rend les nouvelles entrées
+  function refresh() {
+    fetch("/api/contact", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (list) {
+        var newMagos = false;
+        list.forEach(function (entry) {
+          if (!entry || !entry.id) return;
+          if (renderedIds.has(entry.id)) return;
+          renderedIds.add(entry.id);
+          appendBubble(entry);
+          if (entry.de === "magos") newMagos = true;
+        });
+        if (newMagos) hideTyping(); // une vraie réponse est arrivée -> stoppe la simu
+        lastSyncEl.textContent = fmtTime(Date.now() / 1000);
+      })
+      .catch(function () {
+        lastSyncEl.textContent = "échec synchro";
+      });
+  }
+
+  // Envoi d'un message visiteur
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var message = msgInput.value.trim();
+    if (!message) return;
+    var nom = nomInput.value.trim();
+    transmitBtn.disabled = true;
+
+    fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nom: nom, message: message })
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error("bad status " + r.status);
+        msgInput.value = "";
+        showTyping(); // simulation : « Le Magos retranscrit… »
+        refresh();
+      })
+      .catch(function () {
+        var ts = document.getElementById("last-sync");
+        if (ts) ts.textContent = "échec envoi";
+      })
+      .finally(function () { transmitBtn.disabled = false; });
   });
 
-  // Bandeau binaire animé (ambiance machine).
-  const banner = document.getElementById("binaryBanner");
-  if (banner) {
-    let chars = "";
-    const TARGET = 220;
-    function tick() {
-      // Decale et ajoute un nouveau caractere aleatoire 0/1.
-      chars = chars.slice(1) + (Math.random() < 0.5 ? "0" : "1");
-      banner.textContent = chars;
-    }
-    for (let i = 0; i < TARGET; i++) chars += Math.random() < 0.5 ? "0" : "1";
-    banner.textContent = chars;
-    setInterval(tick, 90);
-  }
-
-  // Chargement initial.
-  loadMessages();
+  // Initial + polling
+  refresh();
+  setInterval(refresh, POLL_MS);
 })();

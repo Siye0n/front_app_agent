@@ -1,5 +1,8 @@
-# Messages des visiteurs (contact reel) — a ne pas versionner
+# Données de chat — contiennent les messages des visiteurs / réponses du Magos
 messages.json
+reponses.json
 
-# Variables d'environnement / secrets eventuels
+# Environnement / artefacts Python
+__pycache__/
+*.pyc
 .env
