@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Imperium — Vitrine de l'univers Warhammer 40,000</title>
+  <meta name="description" content="Vitrine statique et grim-dark de l'univers de Warhammer 40,000 : personnages, planètes, factions, lexique et plus." />
+  <!-- Polices Google Fonts : Cinzel (titres gravure) + EB Garamond (corps lisible) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Filigrane aquila (injecté en SVG par js/nav.js) -->
+  <div class="aquila-bg" aria-hidden="true"></div>
+
+  <!-- ===================== BARRE DE MENU (toutes pages) ===================== -->
+  <header class="site-header">
+    <nav class="nav-bar" aria-label="Navigation principale">
+      <span class="brand">⚜ IMPERIUM<small>WARHAMMER 40,000</small></span>
+      <button class="nav-toggle" type="button" aria-controls="menu" aria-label="Ouvrir le menu">☰</button>
+      <ul class="nav-links" id="menu">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="personnages.html">Personnages</a></li>
+        <li><a href="planetes.html">Planètes</a></li>
+        <li><a href="factions.html">Factions</a></li>
+        <li><a href="chronologie.html">Chronologie</a></li>
+        <li><a href="arsenal.html">Armes &amp; Arsenal</a></li>
+        <li><a href="imperium.html">Organes de l'Imperium</a></li>
+        <li><a href="lexique.html">Lexique</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <p class="eyebrow">Anno Domini 40000</p>
+    <h1>IL N'Y A QUE LA <span class="sang">GUERRE</span></h1>
+    <p class="lead">
+      Dans le futur, il n'y a que la guerre. Pendant plus de dix mille ans,
+      l'humanité s'est recroquevillée sous un ciel de cendres, assiégée par des
+      dieux affamés, des xénos sans nombre et ses propres démons intérieurs.
+      Ce qui suit est le récit fragmentaire d'un empire qui refuse de mourir.
+    </p>
+    <p class="cita">« Ils ne connaîtront ni repos ni pitié, car seule la haine les maintient en vie. »</p>
+    <a class="scroll" href="#decouvrir">▼ PLONGEZ DANS L'OMBRE</a>
+  </section>
+
+  <!-- ===================== INTRO ===================== -->
+  <main class="page" id="decouvrir">
+    <div class="section-title">
+      <h2>Le Trône de l'Humanité</h2>
+      <p>
+        L'Imperium est un cadavre gigantesque que l'on maintient debout à force
+        de rituel, de fer et de foi. Explorez ses figures, ses mondes, ses maîtres
+        et ses ennemis à travers les sections ci-dessus.
+      </p>
+    </div>
+
+    <div class="grid">
+      <article class="card">
+        <span class="glyphe" aria-hidden="true">☩</span>
+        <h3>Les Personnages</h3>
+        <p class="role">Figures éminentes</p>
+        <p>
+          De l'Empereur cloué sur son Trône d'Or aux Tech-Priests de Mars,
+          découvrez celles et ceux qui portent le fardeau — ou la flamme —
+          de l'humanité.
+        </p>
+        <div class="symbole"><strong>Symbolique :</strong> l'aigle à deux têtes, l'aquila, veille sur chacun d'eux.</div>
+      </article>
+
+      <article class="card">
+        <span class="glyphe" aria-hidden="true">♅</span>
+        <h3>Les Planètes</h3>
+        <p class="role">Monde & Forteresses</p>
+        <p>
+          Terra, berceau sacré. Mars, le monde rouge de la machine. Cadia, la
+          sentinelle brisée. Chaque monde est une pièce du grand échiquier.
+        </p>
+        <div class="symbole"><strong>Symbolique :</strong> le sol lui-même est relique et champ de bataille.</div>
+      </article>
+
+      <article class="card">
+        <span class="glyphe" aria-hidden="true">⚔</span>
+        <h3>Les Factions</h3>
+        <p class="role">Pouvoirs & Ennemis</p>
+        <p>
+          L'Imperium et ses Space Marines, le Chaos dévorant, les Eldars mourants,
+          les Orks hurlants, la faim tyranide et la froide logique des Tau.
+        </p>
+        <div class="symbole"><strong>Symbolique :</strong> aucune paix n'est jamais signée, seules des trêves meurtrières.</div>
+      </article>
+
+      <article class="card">
+        <span class="glyphe" aria-hidden="true">✶</span>
+        <h3>Le Lexique</h3>
+        <p class="role">Langue & Rituel</p>
+        <p>
+          Adeptus, Aquila, Warp, Immaterium, Astartes… autant de mots qui ouvrent
+          la porte d'un vocabulaire né dans la poussière des siècles noirs.
+        </p>
+        <div class="symbole"><strong>Symbolique :</strong> savoir nommer l'ennemi est déjà le combattre.</div>
+      </article>
+    </div>
+
+    <p style="text-align:center;margin-top:2.4rem;color:var(--ivoire-dim);">
+      « Que l'Empereur protège. » — devise murmurée sur un billion de mondes.
+    </p>
+  </main>
+
+  <!-- ===================== PIED DE PAGE ===================== -->
+  <footer class="site-footer">
+    <p>VITRINE NON OFFICIELLE — univers de fiction inspiré de Warhammer 40,000.</p>
+    <p>Réalisé par le profil <span class="auteur">frontend</span> de la squad · contenu original, aucun extrait copyrighté.</p>
+  </footer>
+
+  <script src="js/nav.js"></script>
+</body>
+</html>

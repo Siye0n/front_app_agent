@@ -1,0 +1,413 @@
+/* ==========================================================================
+   WARHAMMER 40,000 — Vitrine statique
+   Feuille de style : dark fantasy grim-dark
+   Palette : noir charnel #0a0807, ivoire parchemin #e8dcc0,
+             or impérial #c8a04a, rouge sang #9e2b25
+   ========================================================================== */
+
+:root {
+  --noir: #0a0807;
+  --noir-2: #141009;
+  --noir-3: #1d160d;
+  --ivoire: #e8dcc0;
+  --ivoire-dim: #b7ad94;
+  --or: #c8a04a;
+  --or-clair: #e7c574;
+  --sang: #9e2b25;
+  --sang-clair: #c2433c;
+  --filet: rgba(200, 160, 74, 0.28);
+  --ombre: rgba(0, 0, 0, 0.6);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(158, 43, 37, 0.10), transparent 55%),
+    radial-gradient(ellipse at 50% 120%, rgba(200, 160, 74, 0.06), transparent 60%),
+    var(--noir);
+  color: var(--ivoire);
+  font-family: "EB Garamond", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  line-height: 1.7;
+  min-height: 100vh;
+  /* Vignette sombre sur les bords */
+  background-attachment: fixed;
+}
+
+/* Voile de vignette global */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 220px 60px rgba(0, 0, 0, 0.85);
+  z-index: 1;
+}
+
+h1, h2, h3, h4, .titre-gravure {
+  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ivoire);
+  text-shadow: 0 0 14px rgba(200, 160, 74, 0.18);
+  margin: 0 0 0.6em;
+}
+
+a { color: var(--or-clair); text-decoration: none; }
+a:hover { color: var(--ivoire); text-shadow: 0 0 10px rgba(200, 160, 74, 0.5); }
+
+p { margin: 0 0 1em; }
+
+em { color: var(--or-clair); font-style: italic; }
+
+/* ---------- Filigrane aquila (fond discret) ---------- */
+.aquila-bg {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: min(70vw, 620px);
+  transform: translate(-50%, -50%);
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+  color: var(--or);
+}
+
+/* ============================ BARRE DE MENU ============================ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(180deg, #0c0a07 0%, #0a0807 100%);
+  border-bottom: 2px solid var(--or);
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.55rem 1.2rem;
+}
+
+.brand {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  color: var(--or-clair);
+  text-shadow: 0 0 12px rgba(200, 160, 74, 0.35);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.brand small {
+  display: block;
+  font-size: 0.55rem;
+  letter-spacing: 0.35em;
+  color: var(--ivoire-dim);
+  text-shadow: none;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li a {
+  display: block;
+  padding: 0.5rem 0.85rem;
+  font-family: "Cinzel", serif;
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  color: var(--ivoire);
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: color 0.18s, border-color 0.18s, background 0.18s, box-shadow 0.18s;
+}
+.nav-links li a:hover {
+  color: var(--or-clair);
+  border-color: var(--filet);
+  background: rgba(200, 160, 74, 0.06);
+  box-shadow: 0 0 12px rgba(200, 160, 74, 0.25);
+}
+.nav-links li a.active {
+  color: var(--noir);
+  background: linear-gradient(180deg, var(--or-clair), var(--or));
+  border-color: var(--or);
+  text-shadow: none;
+  box-shadow: 0 0 16px rgba(200, 160, 74, 0.45);
+}
+
+/* Bouton burger (mobile) */
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--filet);
+  color: var(--or-clair);
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 0.3rem 0.6rem;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.nav-toggle:hover { background: rgba(200, 160, 74, 0.08); }
+
+/* ============================ CONTENEUR ============================ */
+main, .page {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.4rem 1.4rem 4rem;
+}
+
+.eyebrow {
+  font-family: "Cinzel", serif;
+  letter-spacing: 0.4em;
+  font-size: 0.8rem;
+  color: var(--or);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+/* ============================ HERO (accueil) ============================ */
+.hero {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 5.5rem 1.4rem 4rem;
+  border-bottom: 1px solid var(--filet);
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(158, 43, 37, 0.18), transparent 60%);
+}
+.hero h1 {
+  font-size: clamp(2.2rem, 6vw, 4.2rem);
+  margin-bottom: 0.3em;
+  color: var(--ivoire);
+}
+.hero .sang {
+  color: var(--sang-clair);
+  text-shadow: 0 0 22px rgba(158, 43, 37, 0.55);
+}
+.hero .lead {
+  max-width: 760px;
+  margin: 0 auto 1.6rem;
+  font-size: 1.15rem;
+  color: var(--ivoire);
+}
+.hero .cita {
+  font-family: "Cinzel", serif;
+  font-style: italic;
+  color: var(--or-clair);
+  font-size: 1.25rem;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 16px rgba(200, 160, 74, 0.4);
+}
+.hero .scroll {
+  margin-top: 2rem;
+  display: inline-block;
+  font-family: "Cinzel", serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  color: var(--ivoire-dim);
+}
+
+/* ============================ CARDS / FICHES ============================ */
+.section-title {
+  text-align: center;
+  margin-bottom: 2.2rem;
+}
+.section-title h2 {
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  color: var(--or-clair);
+}
+.section-title p {
+  max-width: 640px;
+  margin: 0.4rem auto 0;
+  color: var(--ivoire-dim);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.4rem;
+}
+
+.card {
+  position: relative;
+  background: linear-gradient(160deg, var(--noir-3), var(--noir-2));
+  border: 1px solid var(--filet);
+  border-radius: 3px;
+  padding: 1.4rem 1.4rem 1.6rem;
+  transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+  overflow: hidden;
+}
+/* Coine angulaire doré en haut à gauche */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 38px; height: 38px;
+  border-top: 2px solid var(--or);
+  border-left: 2px solid var(--or);
+  opacity: 0.7;
+}
+.card::after {
+  content: "";
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 38px; height: 38px;
+  border-bottom: 2px solid var(--or);
+  border-right: 2px solid var(--or);
+  opacity: 0.7;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--or);
+  box-shadow: 0 0 22px rgba(200, 160, 74, 0.25);
+}
+.card h3 {
+  color: var(--or-clair);
+  font-size: 1.35rem;
+  margin-bottom: 0.2em;
+}
+.card .role {
+  font-family: "Cinzel", serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sang-clair);
+  margin-bottom: 0.8rem;
+  display: inline-block;
+}
+.card .glyphe {
+  font-size: 1.8rem;
+  color: var(--or);
+  text-shadow: 0 0 14px rgba(200, 160, 74, 0.5);
+  float: right;
+  margin: -0.2rem 0 0.5rem 0.6rem;
+}
+.card p { font-size: 0.98rem; line-height: 1.65; }
+.card .symbole {
+  margin-top: 0.8rem;
+  padding-top: 0.7rem;
+  border-top: 1px dashed var(--filet);
+  font-size: 0.9rem;
+  color: var(--ivoire-dim);
+}
+.card .symbole strong { color: var(--or-clair); font-family: "Cinzel", serif; }
+
+/* ---------- Lexique ---------- */
+.lexique {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.1rem;
+}
+.terme {
+  background: linear-gradient(160deg, var(--noir-3), var(--noir-2));
+  border-left: 3px solid var(--or);
+  border-radius: 2px;
+  padding: 0.9rem 1.2rem;
+}
+.terme dt {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--or-clair);
+  letter-spacing: 0.05em;
+}
+.terme dd { margin: 0.3rem 0 0; font-size: 0.96rem; color: var(--ivoire); }
+
+/* ---------- Lignes du temps (chronologie) ---------- */
+.timeline {
+  border-left: 2px solid var(--filet);
+  margin-left: 0.6rem;
+  padding-left: 1.6rem;
+}
+.timeline .era {
+  position: relative;
+  margin-bottom: 1.8rem;
+}
+.timeline .era::before {
+  content: "";
+  position: absolute;
+  left: -2.05rem; top: 0.4rem;
+  width: 12px; height: 12px;
+  background: var(--or);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(200, 160, 74, 0.6);
+}
+.timeline h3 { color: var(--or-clair); font-size: 1.2rem; margin-bottom: 0.2em; }
+.timeline .date {
+  font-family: "Cinzel", serif;
+  color: var(--sang-clair);
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+}
+
+/* ---------- Bloc années (imperium) ---------- */
+.orgs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.1rem;
+}
+
+/* ============================ PIED DE PAGE ============================ */
+.site-footer {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 2rem 1.4rem 3rem;
+  border-top: 1px solid var(--filet);
+  color: var(--ivoire-dim);
+  font-size: 0.85rem;
+  font-family: "Cinzel", serif;
+  letter-spacing: 0.1em;
+}
+.site-footer .auteur { color: var(--or); }
+
+/* ---------- Accessibilité : focus visible ---------- */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--or-clair);
+  outline-offset: 2px;
+}
+
+/* ============================ RESPONSIVE ============================ */
+@media (max-width: 760px) {
+  body { font-size: 17px; }
+  .nav-toggle { display: block; }
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+    margin-top: 0.6rem;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links li a {
+    border: none;
+    border-top: 1px solid var(--filet);
+    border-radius: 0;
+    padding: 0.75rem 0.4rem;
+  }
+  .nav-bar { flex-wrap: wrap; }
+  .hero { padding: 3.5rem 1rem 2.5rem; }
+  .grid, .lexique, .orgs { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 420px) {
+  .brand { font-size: 0.95rem; }
+}
