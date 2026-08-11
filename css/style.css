@@ -21,6 +21,29 @@
 
 * { box-sizing: border-box; }
 
+/* Lien de source externe (Lexicanum) — crédit, couleur or impérial,
+   discret en pied de fiche. Ouvre dans un nouvel onglet. */
+.source-link {
+  margin-top: 0.9rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--filet);
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+}
+.source-link a,
+a[href*="lexicanum.com"] {
+  color: var(--or);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--or);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.source-link a:hover,
+a[href*="lexicanum.com"]:hover {
+  color: var(--or-clair);
+  border-bottom-color: var(--or-clair);
+}
+
 html { scroll-behavior: smooth; }
 
 body {
