@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSINT Entreprises</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>🔎 OSINT Entreprises</h1>
+      <p class="subtitle">Récupère les premières entreprises d'une ville (nom, adresse, site web).</p>
+    </header>
+
+    <section class="search-bar">
+      <label for="ville">Ville</label>
+      <input type="text" id="ville" name="ville" placeholder="Ex : Paris" autocomplete="off">
+
+      <label for="limit">Nombre (max 50)</label>
+      <input type="number" id="limit" name="limit" value="10" min="1" max="50">
+
+      <button id="rechercher" type="button">Rechercher</button>
+    </section>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+
+    <section id="results" class="results" hidden>
+      <h2 id="results-title"></h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Adresse</th>
+            <th>Site web</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
