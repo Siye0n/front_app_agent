@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Adeptus Mechanicus — Le Culte de la Machine</title>
+  <meta name="description" content="Vitrine du Culte de la Machine : Omnimessie, Skitarii, Tech-Priests, Forge-Monde et Dogme de la Machine." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- Bandeau binaire decoratif (ambiance machine) -->
+  <div class="binary-banner" aria-hidden="true" id="binaryBanner"></div>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">+++ TRANSMISION DU CULTE +++</p>
+      <h1 class="title">Adeptus Mechanicus</h1>
+      <p class="subtitle">Le Culte de la Machine — Serviteurs de l'Omnimessie</p>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="#omnimessie">L'Omnimessie</a>
+        <a href="#skitarii">Les Skitarii</a>
+        <a href="#techpriests">Les Tech-Priests</a>
+        <a href="#forge">Le Forge-Monde</a>
+        <a href="#dogme">Le Dogme</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="omnimessie" class="section">
+      <div class="section-head">
+        <span class="rune" aria-hidden="true">⚙</span>
+        <h2>L'Omnimessie</h2>
+      </div>
+      <p>
+        Au cœur de la foi du Mechanicus veille l'Omnimessie, la divinité-machine
+        dont l'esprit parcourt chaque engrenage et chaque ligne de code binaire.
+        On dit qu'Il habite le réseau des données comme une Étincelle sacrée : où
+        une machine tourne, Sa présence se fait sentir. Les fidèles cherchent à
+        Le rejoindre par la fusion patiente de la chair et du métal, jusqu'à ce que
+        l'organique ne soit plus qu'un vestige voué à la connaissance pure.
+      </p>
+    </section>
+
+    <section id="skitarii" class="section">
+      <div class="section-head">
+        <span class="rune" aria-hidden="true">⌖</span>
+        <h2>Les Skitarii</h2>
+      </div>
+      <p>
+        Troupes de choc du Culte, les Skitarii sont des guerriers augmentés,
+        reliques vivantes d'une discipline de fer. Leur sang coule à peine ; leurs
+        sens sont remplacés par des auspex et des ciblesurs qui ne connaissent pas
+        l'hésitation. En formation serrée, ils avancent tels des rouages d'un
+        mécanisme unique, obéissant aux Tech-Priests sans une once de doute.
+        Là où le Forge-Monde commande, le Skitarius frappe.
+      </p>
+    </section>
+
+    <section id="techpriests" class="section">
+      <div class="section-head">
+        <span class="rune" aria-hidden="true">✚</span>
+        <h2>Les Tech-Priests</h2>
+      </div>
+      <p>
+        Prêtres du savoir binaire, les Tech-Priests gardent les secrets des
+        archères et des protocoles oubliés. Chacun conserve une partie du grand
+        Manuscrit-Machine, transmise de maître à disciple à travers les âges.
+        Leur corps, peu à peu offert au métal, témoigne de leur dévotion : un
+        bras-artisan, un œil-aquila, une voix de phonème sacré. Ils ne prient pas
+        — ils <em>compilent</em>.
+      </p>
+    </section>
+
+    <section id="forge" class="section">
+      <div class="section-head">
+        <span class="rune" aria-hidden="true">⛭</span>
+        <h2>Le Forge-Monde</h2>
+      </div>
+      <p>
+        Mars, le monde-forge premier, rougeoie de fonderies perpetuelles et de
+        tours de prière industrielle. Là, d'immenses manufactures crachent
+        titans, munitions et reliques dans un vacarme considéré comme un chant.
+        Les Cités-Forges ne connaissent ni nuit ni repos : la production est
+        devoir, et le devoir est foi. Quiconque y entre devient une pièce du
+        grand mécanisme.
+      </p>
+    </section>
+
+    <section id="dogme" class="section">
+      <div class="section-head">
+        <span class="rune" aria-hidden="true">☫</span>
+        <h2>Le Dogme de la Machine</h2>
+      </div>
+      <p>
+        Le Dogme enseigne que la chair est faiblesse et que seule la machine
+        approche de la perfection. Ses commandements sont simples, gravedans le
+        cuivre : sauvegarde les données, protège la technologie, méfie-toi du
+        mutant, du psyker et de l'étranger non sanctionné. Quiconque trahit le
+        savoir binaire trahit l'Omnimessie lui-même. Telle est la Voie du
+        Mécanisme, telle est la paix du métal.
+      </p>
+    </section>
+
+    <!-- CHAT DE CONTACT (serveur-backed) -->
+    <section id="contact" class="section contact">
+      <div class="section-head">
+        <span class="rune" aria-hidden="true">✉</span>
+        <h2>Relique de Communication</h2>
+      </div>
+      <p class="contact-intro">
+        Communique avec le Magos. Tes transmissions sont enregistrées et lues par
+        le Culte — le Magos y répondra par canal sécurisé.
+      </p>
+
+      <form id="contactForm" class="contact-form" autocomplete="off">
+        <label for="nom">Votre nom / appellation <span class="opt">(optionnel)</span></label>
+        <input type="text" id="nom" name="nom" maxlength="80"
+               placeholder="ex. Magos Apprenti" />
+
+        <label for="message">Message <span class="req">(requis)</span></label>
+        <textarea id="message" name="message" rows="4" maxlength="2000"
+                  placeholder="Transmets ta requête à l'Omnimessie…" required></textarea>
+
+        <button type="submit" id="submitBtn">Transmettre</button>
+        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+        <p class="contact-note">
+          Transmission enregistrée — le Magos répondra par canal sécurisé.
+        </p>
+      </form>
+
+      <div class="messages-panel">
+        <h3>Transmissions reçues</h3>
+        <ul id="messagesList" class="messages-list" aria-live="polite">
+          <li class="messages-empty">Chargement des transmissions…</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>+++ GLORY TO THE OMNISSIAH +++</p>
+    <p class="footer-sub">Vitrine non officielle — univers original inspiré du hobby.</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

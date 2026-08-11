@@ -1,0 +1,294 @@
+/* ============================================================
+   Adeptus Mechanicus — feuille de style du Culte de la Machine
+   Palette : noir charbon, laiton/bronze, rouge-coke, vert
+   binaire/phosphore, ivoire. Aucune image : SVG/CSS uniquement.
+   ============================================================ */
+
+:root {
+  --charbon: #0d0b0a;
+  --charbon-2: #16120f;
+  --laiton: #b08d57;
+  --laiton-clair: #d8b277;
+  --rouge: #9e2b25;
+  --rouge-clair: #c64a3f;
+  --phosphore: #36c46a;
+  --ivoire: #e8dcc0;
+  --ivoire-dim: #b9ad92;
+  --bordure: rgba(176, 141, 87, 0.35);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(158, 43, 37, 0.12), transparent 45%),
+    radial-gradient(circle at 80% 10%, rgba(54, 196, 106, 0.08), transparent 40%),
+    var(--charbon);
+  color: var(--ivoire);
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+/* Bandeau binaire decoratif en haut */
+.binary-banner {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--phosphore);
+  background: #050403;
+  border-bottom: 1px solid var(--bordure);
+  padding: 4px 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0.85;
+  text-shadow: 0 0 6px rgba(54, 196, 106, 0.6);
+}
+
+/* Hero / Header */
+.hero {
+  text-align: center;
+  padding: 70px 20px 50px;
+  border-bottom: 2px solid var(--bordure);
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(176, 141, 87, 0.05) 0 2px,
+      transparent 2px 16px
+    ),
+    linear-gradient(180deg, var(--charbon-2), var(--charbon));
+}
+
+.kicker {
+  font-family: 'Courier New', monospace;
+  color: var(--phosphore);
+  letter-spacing: 4px;
+  font-size: 13px;
+  margin: 0 0 18px;
+  text-shadow: 0 0 8px rgba(54, 196, 106, 0.5);
+}
+
+.title {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  margin: 0;
+  color: var(--ivoire);
+  letter-spacing: 3px;
+  text-shadow:
+    0 0 14px rgba(176, 141, 87, 0.5),
+    0 2px 0 #000;
+}
+
+.subtitle {
+  font-family: 'Cinzel', serif;
+  color: var(--laiton);
+  letter-spacing: 2px;
+  margin: 12px 0 0;
+  font-size: clamp(1rem, 2.4vw, 1.4rem);
+}
+
+/* Navigation */
+.nav {
+  margin-top: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 22px;
+}
+.nav a {
+  color: var(--laiton-clair);
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav a:hover {
+  color: var(--phosphore);
+  border-bottom-color: var(--phosphore);
+}
+
+/* Sections */
+main { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+.section {
+  padding: 46px 0 30px;
+  border-bottom: 1px solid rgba(176, 141, 87, 0.14);
+}
+.section:last-child { border-bottom: none; }
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.section-head h2 {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  color: var(--laiton-clair);
+  margin: 0;
+  letter-spacing: 1px;
+}
+.rune {
+  font-size: 1.8rem;
+  color: var(--rouge-clair);
+  text-shadow: 0 0 10px rgba(158, 43, 37, 0.7);
+}
+.section p { color: var(--ivoire); }
+.section em { color: var(--phosphore); font-style: italic; }
+
+/* Contact / Chat */
+.contact { scroll-margin-top: 20px; }
+.contact-intro { color: var(--ivoire-dim); }
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--charbon-2);
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  padding: 22px;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+}
+.contact-form label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  color: var(--laiton);
+  letter-spacing: 0.5px;
+}
+.contact-form .opt { color: var(--ivoire-dim); font-size: 0.8rem; }
+.contact-form .req { color: var(--rouge-clair); font-size: 0.8rem; }
+
+.contact-form input,
+.contact-form textarea {
+  background: #050403;
+  border: 1px solid var(--bordure);
+  border-radius: 5px;
+  color: var(--ivoire);
+  font-family: 'EB Garamond', serif;
+  font-size: 1rem;
+  padding: 10px 12px;
+  resize: vertical;
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: var(--phosphore);
+  box-shadow: 0 0 0 2px rgba(54, 196, 106, 0.25);
+}
+
+.contact-form button {
+  align-self: flex-start;
+  margin-top: 6px;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 1rem;
+  color: var(--charbon);
+  background: linear-gradient(180deg, var(--laiton-clair), var(--laiton));
+  border: 1px solid var(--laiton);
+  border-radius: 5px;
+  padding: 11px 26px;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.05s;
+}
+.contact-form button:hover { filter: brightness(1.12); }
+.contact-form button:active { transform: translateY(1px); }
+.contact-form button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.form-status { min-height: 1.2em; margin: 6px 0 0; font-size: 0.95rem; }
+.form-status.ok { color: var(--phosphore); }
+.form-status.err { color: var(--rouge-clair); }
+
+.contact-note {
+  margin: 10px 0 0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.82rem;
+  color: var(--ivoire-dim);
+  border-left: 2px solid var(--rouge);
+  padding-left: 10px;
+}
+
+/* Liste des messages */
+.messages-panel { margin-top: 28px; }
+.messages-panel h3 {
+  font-family: 'Cinzel', serif;
+  color: var(--laiton-clair);
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  margin: 0 0 12px;
+}
+.messages-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.messages-empty {
+  color: var(--ivoire-dim);
+  font-style: italic;
+}
+.msg {
+  background: #050403;
+  border: 1px solid var(--bordure);
+  border-left: 3px solid var(--rouge);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.msg .msg-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  color: var(--laiton);
+  margin-bottom: 6px;
+}
+.msg .msg-nom { color: var(--phosphore); }
+.msg .msg-text {
+  margin: 0;
+  color: var(--ivoire);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 40px 20px;
+  border-top: 2px solid var(--bordure);
+  background: var(--charbon-2);
+  margin-top: 30px;
+}
+.footer p {
+  font-family: 'Cinzel', serif;
+  color: var(--laiton);
+  letter-spacing: 3px;
+  margin: 0;
+}
+.footer .footer-sub {
+  font-family: 'EB Garamond', serif;
+  letter-spacing: 0.5px;
+  color: var(--ivoire-dim);
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+/* Responsive : tout en colonne sur mobile */
+@media (max-width: 640px) {
+  body { font-size: 17px; }
+  .nav { flex-direction: column; gap: 8px; }
+  .section { padding: 36px 0 24px; }
+  .contact-form { padding: 16px; }
+}

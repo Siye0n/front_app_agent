@@ -1,0 +1,5 @@
+# Messages des visiteurs (contact reel) — a ne pas versionner
+messages.json
+
+# Variables d'environnement / secrets eventuels
+.env
