@@ -16,31 +16,31 @@
   --ivoire: #e8dcc0;
 }
 
-/* --- Aquila binaire animé sur les côtés du canal --- */
-.aquila-rail {
+/* --- Crâne binaire animé sur les côtés du canal --- */
+.skull-rail {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 90px;
+  width: 64px;
   padding: 10px 4px;
   user-select: none;
 }
-.aquila-rail canvas {
-  width: 80px;
-  height: 320px;
+.skull-rail canvas {
+  width: 54px;
+  height: 64px;
   image-rendering: pixelated;
-  filter: drop-shadow(0 0 6px rgba(54,196,106,0.55));
-  opacity: 0.85;
+  filter: drop-shadow(0 0 5px rgba(54,196,106,0.5));
+  opacity: 0.9;
 }
 
-/* Le canal devient une grille : [aquila G] [contenu] [aquila D] */
+/* Le canal devient une grille : [crâne G] [contenu] [crâne D] */
 .canal {
   display: grid;
-  grid-template-columns: 90px 1fr 90px;
+  grid-template-columns: 64px 1fr 64px;
   grid-template-areas:
     ".      header  ."
-    "aquilaL chatlog aquilaR"
+    "skullL chatlog skullR"
     ".      typing   ."
     ".      sync     ."
     ".      form     ."
@@ -49,8 +49,8 @@
   align-items: start;
 }
 .canal-header { grid-area: header; }
-.aquila-left  { grid-area: aquilaL; }
-.aquila-right { grid-area: aquilaR; }
+.skull-left  { grid-area: skullL; }
+.skull-right { grid-area: skullR; }
 .chat-log    { grid-area: chatlog; }
 .typing-indicator { grid-area: typing; }
 .canal-sync  { grid-area: sync; }
@@ -58,9 +58,9 @@
 .canal-note  { grid-area: note; }
 
 @media (max-width: 640px) {
-  .aquila-rail { width: 56px; }
-  .aquila-rail canvas { width: 48px; height: 200px; }
-  .canal { grid-template-columns: 56px 1fr 56px; }
+  .skull-rail { width: 44px; }
+  .skull-rail canvas { width: 36px; height: 44px; }
+  .canal { grid-template-columns: 44px 1fr 44px; }
 }
 
 * { box-sizing: border-box; }
