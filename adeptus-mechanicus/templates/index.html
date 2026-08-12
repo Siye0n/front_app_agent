@@ -78,6 +78,16 @@
 
     <!-- ============ CANAL DE COMMUNICATION ============ -->
     <section id="canal" class="canal">
+      <!-- Crânes binaires animés sur les côtés -->
+      <div class="skull-rail skull-left" aria-hidden="true">
+        <div class="skull">&#9760;</div>
+        <div class="binary-stream" data-stream></div>
+      </div>
+      <div class="skull-rail skull-right" aria-hidden="true">
+        <div class="skull">&#9760;</div>
+        <div class="binary-stream" data-stream></div>
+      </div>
+
       <div class="canal-header">
         <span class="canal-aquila" aria-hidden="true">
           <svg viewBox="0 0 100 100" class="aquila-pulse">
@@ -118,8 +128,8 @@
     <p>Adeptus Mechanicus — relique de communication. Univers Warhammer 40,000 (contenu original).</p>
   </footer>
 
-  <!-- Client SocketIO (CDN officiel) pour le push temps réel des réponses -->
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" crossorigin="anonymous"></script>
+  <!-- Client SocketIO servi LOCALEMENT (téléchargé en static/, pas de CDN externe) -->
+  <script src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

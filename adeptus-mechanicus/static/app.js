@@ -41,15 +41,16 @@
       '</g><circle cx="50" cy="50" r="4" fill="#36c46a"/></svg>';
   }
 
-  // Affiche une bulle (avec fade-in via classe CSS)
+  // Affiche une bulle (avec fade-in via classe CSS). Retourne true si réellement rendue.
   function appendBubble(entry) {
     if (!entry || !entry.id) entry = Object.assign({}, entry, { id: "x" + Math.random() });
     var isMagos = entry.de === "magos";
+    // dédupe par id si déjà rendu
+    if (renderedIds.has(entry.id)) return false;
+    renderedIds.add(entry.id);
+
     var row = document.createElement("div");
     row.className = "bubble-row " + (isMagos ? "magos" : "visiteur");
-    // dédupe par id si déjà rendu
-    if (renderedIds.has(entry.id)) return;
-    renderedIds.add(entry.id);
 
     var who = isMagos ? "Magos" : (entry.nom && entry.nom.trim() ? entry.nom.trim() : "Visiteur");
 
@@ -87,6 +88,7 @@
     }
 
     chatLog.scrollTop = chatLog.scrollHeight;
+    return true;
   }
 
   function typeText(el, text) {
@@ -144,46 +146,75 @@
       .finally(function () { transmitBtn.disabled = false; });
   });
 
-  // --- TEMPS RÉEL via SocketIO ---
-  function markSync() {
-    if (lastSyncEl) lastSyncEl.textContent = fmtTime(Date.now() / 1000) + " (temps réel)";
+  // --- TEMPS RÉEL via SocketIO (+ polling de secours pour garantir réception) ---
+  function markSync(mode) {
+    if (lastSyncEl) lastSyncEl.textContent = fmtTime(Date.now() / 1000) + (mode ? " (" + mode + ")" : "");
+  }
+
+  // Polling de secours : même si le WebSocket échoue, on récupère l'historique
+  // toutes les 2s. Combine avec le push socketio (dedupe par id) -> jamais de perte.
+  var POLL_FALLBACK_MS = 2000;
+  function refresh() {
+    fetch("/api/contact", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (list) {
+        var newMagos = false;
+        (list || []).forEach(function (entry) { if (appendBubble(entry)) newMagos = true; });
+        if (newMagos) hideTyping();
+        markSync("polling");
+      })
+      .catch(function () { if (lastSyncEl) lastSyncEl.textContent = "échec synchro"; });
   }
 
   if (window.io) {
-    var socket = io();
-    // Historique complet dès la connexion (plus besoin de polling)
-    socket.on("historique", function (list) {
-      (list || []).forEach(function (entry) { appendBubble(entry); });
-      markSync();
-    });
-    // Nouvelle réponse du Magos poussée en temps réel -> bulle instantanée
-    socket.on("nouvelle_reponse", function (entry) {
-      appendBubble(entry);
-      hideTyping(); // une vraie réponse est arrivée -> stoppe la simu
-      markSync();
-    });
-    // Un autre visiteur a écrit (utile si multi-clients ; ici surtout pour le typing)
-    socket.on("nouveau_visiteur", function (entry) {
-      // On ne rend pas ici : l'émetteur l'a déjà affiché via son propre POST.
-      markSync();
-    });
-    socket.on("connect", function () { markSync(); });
-    socket.on("disconnect", function () {
-      if (lastSyncEl) lastSyncEl.textContent = "canal fermé";
-    });
-  } else {
-    // Fallback (si le CDN SocketIO échoue) : ancien polling
-    console.warn("SocketIO indisponible — repli sur polling.");
-    function refresh() {
-      fetch("/api/contact", { cache: "no-store" })
-        .then(function (r) { return r.json(); })
-        .then(function (list) {
-          (list || []).forEach(function (entry) { appendBubble(entry); });
-          markSync();
-        })
-        .catch(function () { if (lastSyncEl) lastSyncEl.textContent = "échec synchro"; });
+    try {
+      var socket = io();
+      socket.on("historique", function (list) {
+        (list || []).forEach(function (entry) { appendBubble(entry); });
+        markSync("temps réel");
+      });
+      socket.on("nouvelle_reponse", function (entry) {
+        if (appendBubble(entry)) hideTyping();
+        markSync("temps réel");
+      });
+      socket.on("nouveau_visiteur", function () { markSync("temps réel"); });
+      socket.on("connect", function () { markSync("temps réel"); });
+      socket.on("disconnect", function () { if (lastSyncEl) lastSyncEl.textContent = "canal fermé — repli polling"; });
+      // polling de secours en parallèle (silencieux, garantit la réception)
+      refresh();
+      setInterval(refresh, POLL_FALLBACK_MS);
+    } catch (err) {
+      console.warn("SocketIO error, polling seul:", err);
+      refresh();
+      setInterval(refresh, POLL_FALLBACK_MS);
     }
+  } else {
+    console.warn("SocketIO indisponible — repli sur polling.");
     refresh();
-    setInterval(refresh, 4000);
+    setInterval(refresh, POLL_FALLBACK_MS);
   }
+
+  // --- Animation : crânes binaires défilants sur les côtés ---
+  function startBinaryStreams() {
+    var streams = document.querySelectorAll("[data-stream]");
+    streams.forEach(function (el) {
+      var chars = [];
+      var ROWS = 18, COLS = 6;
+      for (var r = 0; r < ROWS; r++) {
+        var row = "";
+        for (var c = 0; c < COLS; c++) row += (Math.random() < 0.5 ? "0" : "1");
+        chars.push(row);
+      }
+      el.textContent = chars.join("\n");
+      setInterval(function () {
+        // fait défiler : retire 1ère ligne, ajoute 1 ligne aléatoire en bas
+        chars.shift();
+        var row = "";
+        for (var c = 0; c < COLS; c++) row += (Math.random() < 0.5 ? "0" : "1");
+        chars.push(row);
+        el.textContent = chars.join("\n");
+      }, 220);
+    });
+  }
+  startBinaryStreams();
 })();
