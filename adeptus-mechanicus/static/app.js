@@ -194,27 +194,72 @@
     setInterval(refresh, POLL_FALLBACK_MS);
   }
 
-  // --- Animation : crânes binaires défilants sur les côtés ---
-  function startBinaryStreams() {
-    var streams = document.querySelectorAll("[data-stream]");
-    streams.forEach(function (el) {
-      var chars = [];
-      var ROWS = 18, COLS = 6;
-      for (var r = 0; r < ROWS; r++) {
-        var row = "";
-        for (var c = 0; c < COLS; c++) row += (Math.random() < 0.5 ? "0" : "1");
-        chars.push(row);
+  // --- Animation : aquila binaire (aigle impérial en 0/1 qui scintillent) ---
+  // Motif aquila : '#' = pixel de l'aigle, ' ' = vide. Les pixels '#' affichent
+  // un 0/1 aléatoire qui change à chaque frame -> l'aigle semble "fait de binaire".
+  var AQUILA = [
+    "........########################........",
+    "......##############################......",
+    ".....######....................######.....",
+    "....####..........................####....",
+    "...###..............##..............###...",
+    "..####............######............####..",
+    "..###...........########.............###..",
+    ".####..........##########............####.",
+    ".###..........############............###.",
+    "####.........##############...........####",
+    "####........########################....####",
+    "####.......########################....####",
+    ".####.....########################....####.",
+    ".####....########################......####.",
+    "..###...########################........###..",
+    "..###..##################..##..........###..",
+    "...##.################......###.........##...",
+    "...##.##############..........##........##...",
+    "....##.###########............##.......##....",
+    ".....##.##########..............##.....##.....",
+    "......##.#########................##...##......",
+    "......##.#######..................##.##.......",
+    ".......##.#####....................###........",
+    "........##.###.....................###........",
+    ".........##.##.....................##.........",
+    "..........###.....................###.........",
+    "..........###.....................###.........",
+    "...........##.....................##..........",
+    "............................................",
+    "............................................"
+  ];
+
+  function startAquila(canvas) {
+    var ctx = canvas.getContext("2d");
+    var rows = AQUILA.length, cols = AQUILA[0].length;
+    var cellW = canvas.width / cols, cellH = canvas.height / rows;
+    ctx.font = Math.floor(cellH * 0.95) + "px 'Share Tech Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var y = 0; y < rows; y++) {
+        var line = AQUILA[y];
+        for (var x = 0; x < cols; x++) {
+          if (line[x] === "#") {
+            var bit = Math.random() < 0.5 ? "0" : "1";
+            // léger scintillement d'opacité pour l'effet "vivant"
+            ctx.globalAlpha = 0.55 + Math.random() * 0.45;
+            ctx.fillStyle = "#36c46a";
+            ctx.fillText(bit, x * cellW + cellW / 2, y * cellH + cellH / 2);
+          }
+        }
       }
-      el.textContent = chars.join("\n");
-      setInterval(function () {
-        // fait défiler : retire 1ère ligne, ajoute 1 ligne aléatoire en bas
-        chars.shift();
-        var row = "";
-        for (var c = 0; c < COLS; c++) row += (Math.random() < 0.5 ? "0" : "1");
-        chars.push(row);
-        el.textContent = chars.join("\n");
-      }, 220);
-    });
+      ctx.globalAlpha = 1;
+    }
+    draw();
+    setInterval(draw, 140);
   }
-  startBinaryStreams();
+
+  function startAquilas() {
+    document.querySelectorAll(".aquila-canvas").forEach(function (cv) { startAquila(cv); });
+  }
+  startAquilas();
 })();

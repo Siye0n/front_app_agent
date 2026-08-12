@@ -16,50 +16,31 @@
   --ivoire: #e8dcc0;
 }
 
-/* --- Crânes binaires animés sur les côtés du canal --- */
-.skull-rail {
+/* --- Aquila binaire animé sur les côtés du canal --- */
+.aquila-rail {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  width: 70px;
+  width: 90px;
   padding: 10px 4px;
-  font-family: "Share Tech Mono", monospace;
-  color: var(--vert);
-  opacity: 0.55;
   user-select: none;
 }
-.skull-rail .skull {
-  font-size: 2.4rem;
-  line-height: 1;
-  color: var(--vert);
-  text-shadow: 0 0 8px var(--vert), 0 0 18px rgba(54,196,106,0.5);
-  animation: skull-pulse 3.2s ease-in-out infinite;
-}
-@keyframes skull-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50%      { transform: scale(1.12); opacity: 1; text-shadow: 0 0 14px var(--vert), 0 0 26px rgba(54,196,106,0.8); }
-}
-.skull-rail .binary-stream {
-  font-size: 0.62rem;
-  line-height: 1.15;
-  letter-spacing: 1px;
-  white-space: pre;
-  color: var(--vert);
-  opacity: 0.6;
-  text-shadow: 0 0 4px rgba(54,196,106,0.6);
-  overflow: hidden;
-  max-height: 220px;
+.aquila-rail canvas {
+  width: 80px;
+  height: 320px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 6px rgba(54,196,106,0.55));
+  opacity: 0.85;
 }
 
-/* Le canal devient une grille : [crâne G] [contenu] [crâne D] */
+/* Le canal devient une grille : [aquila G] [contenu] [aquila D] */
 .canal {
   display: grid;
-  grid-template-columns: 70px 1fr 70px;
+  grid-template-columns: 90px 1fr 90px;
   grid-template-areas:
     ".      header  ."
-    "skullL chatlog skullR"
+    "aquilaL chatlog aquilaR"
     ".      typing   ."
     ".      sync     ."
     ".      form     ."
@@ -68,8 +49,8 @@
   align-items: start;
 }
 .canal-header { grid-area: header; }
-.skull-left  { grid-area: skullL; }
-.skull-right { grid-area: skullR; }
+.aquila-left  { grid-area: aquilaL; }
+.aquila-right { grid-area: aquilaR; }
 .chat-log    { grid-area: chatlog; }
 .typing-indicator { grid-area: typing; }
 .canal-sync  { grid-area: sync; }
@@ -77,10 +58,9 @@
 .canal-note  { grid-area: note; }
 
 @media (max-width: 640px) {
-  .skull-rail { width: 44px; }
-  .skull-rail .skull { font-size: 1.6rem; }
-  .skull-rail .binary-stream { font-size: 0.5rem; max-height: 140px; }
-  .canal { grid-template-columns: 44px 1fr 44px; }
+  .aquila-rail { width: 56px; }
+  .aquila-rail canvas { width: 48px; height: 200px; }
+  .canal { grid-template-columns: 56px 1fr 56px; }
 }
 
 * { box-sizing: border-box; }
