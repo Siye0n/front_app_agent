@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adeptus Mechanicus — Le Culte de la Machine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=EB+Garamond:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Bandeau binaire décoratif -->
+  <div class="binary-band" aria-hidden="true">
+    01001010 00100000 01001111 01001101 01001110 01001001 01010011 01010011 01001001 01000001 00100000 01000100 01001111 01000011 01000101 01010100 00100000 01001101 01000001 01000011 01001000 01001001 01001110 01000101
+  </div>
+
+  <header class="hero">
+    <div class="hero-aquila" aria-hidden="true">
+      <!-- Aquila (aigle impérial à deux têtes) — SVG redessiné, symétrique -->
+      <svg viewBox="0 0 200 200" class="aquila-hero">
+        <defs>
+          <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="2.2" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g fill="none" stroke="#b08d57" stroke-width="2.4" filter="url(#glow)" stroke-linecap="round" stroke-linejoin="round">
+          <!-- couronne / disque impérial -->
+          <circle cx="100" cy="100" r="74" stroke="#9e2b25" stroke-width="1.6" opacity="0.55"/>
+          <!-- corps central -->
+          <path d="M100 58 L100 150"/>
+          <!-- tête gauche -->
+          <path d="M100 64 C88 50 70 46 60 54 C66 60 74 62 80 66 C72 70 70 78 76 84"/>
+          <!-- tête droite (symétrique) -->
+          <path d="M100 64 C112 50 130 46 140 54 C134 60 126 62 120 66 C128 70 130 78 124 84"/>
+          <!-- aile gauche déployée -->
+          <path d="M100 78 C76 64 44 64 26 84 C44 82 56 92 64 104 C50 100 40 108 34 120 C52 112 64 118 74 128 C82 120 90 116 96 112"/>
+          <!-- aile droite déployée (symétrique) -->
+          <path d="M100 78 C124 64 156 64 174 84 C156 82 144 92 136 104 C150 100 160 108 166 120 C148 112 136 118 126 128 C118 120 110 116 104 112"/>
+          <!-- serres / base -->
+          <path d="M100 150 C92 158 86 160 82 156 M100 150 C108 158 114 160 118 156"/>
+        </g>
+        <circle cx="100" cy="100" r="5" fill="#36c46a" filter="url(#glow)"/>
+      </svg>
+    </div>
+    <h1 class="title">ADEPTUS MECHANICUS</h1>
+    <p class="subtitle">Le Culte de la Machine — Serviteurs de l'Omnimessie</p>
+  </header>
+
+  <main>
+    <!-- ============ CANAL DE COMMUNICATION ============ -->
+    <section id="canal" class="canal">
+      <!-- Crânes binaires animés sur les côtés -->
+      <div class="skull-rail skull-left" aria-hidden="true">
+        <canvas class="skull-canvas" width="88" height="104"></canvas>
+      </div>
+      <div class="skull-rail skull-right" aria-hidden="true">
+        <canvas class="skull-canvas" width="88" height="104"></canvas>
+      </div>
+
+      <div class="canal-header">
+        <h2>Canal de communication // Magos</h2>
+      </div>
+
+      <div id="chat-log" class="chat-log" aria-live="polite"></div>
+
+      <!-- Indicateur de frappe du Magos -->
+      <div id="typing-indicator" class="typing-indicator" hidden>
+        <span class="typing-label">Le Magos retranscrit</span>
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+
+      <div class="canal-sync">
+        Dernière synchro <span id="last-sync">—</span>
+      </div>
+
+      <form id="contact-form" class="canal-form" autocomplete="off">
+        <input type="text" id="nom" name="nom" placeholder="Votre nom / appellation (optionnel)" maxlength="60">
+        <textarea id="message" name="message" placeholder="Transmettez votre communiqué au Magos…" maxlength="2000" required></textarea>
+        <button type="submit" id="transmit-btn">Transmettre</button>
+      </form>
+      <p class="canal-note">Transmission enregistrée — le Magos répondra par canal sécurisé (temps réel).</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="binary-mini" aria-hidden="true">01001101 01000101 01010010 01000011 01011001</span>
+    <p>Adeptus Mechanicus — relique de communication. Univers Warhammer 40,000 (contenu original).</p>
+  </footer>
+
+  <!-- Client SocketIO servi LOCALEMENT (téléchargé en static/, pas de CDN externe) -->
+  <script src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

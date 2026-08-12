@@ -1,0 +1,8 @@
+# Données de chat — contiennent les messages des visiteurs / réponses du Magos
+messages.json
+reponses.json
+
+# Environnement / artefacts Python
+__pycache__/
+*.pyc
+.env
