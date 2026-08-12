@@ -109,7 +109,7 @@
         <textarea id="message" name="message" placeholder="Transmettez votre communiqué au Magos…" maxlength="2000" required></textarea>
         <button type="submit" id="transmit-btn">Transmettre</button>
       </form>
-      <p class="canal-note">Transmission enregistrée — le Magos répondra par canal sécurisé (polling).</p>
+      <p class="canal-note">Transmission enregistrée — le Magos répondra par canal sécurisé (temps réel).</p>
     </section>
   </main>
 
@@ -118,6 +118,8 @@
     <p>Adeptus Mechanicus — relique de communication. Univers Warhammer 40,000 (contenu original).</p>
   </footer>
 
+  <!-- Client SocketIO (CDN officiel) pour le push temps réel des réponses -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" crossorigin="anonymous"></script>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

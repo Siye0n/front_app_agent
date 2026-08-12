@@ -1,15 +1,16 @@
 /* =========================================================
-   Adeptus Mechanicus — canal de communication (chat bilatéral)
+   Adeptus Mechanicus — canal de communication (chat bilatéral temps réel)
    - Rend les bulles visiteur (droite) / Magos (gauche + aquila)
    - Fade-in à l'apparition, typing indicator après envoi visiteur
    - Typing effect progressif pour les messages du Magos
-   - Polling GET /api/contact toutes les ~4s (dernière synchro)
+   - TEMPS RÉEL : SocketIO pousse 'historique' (au connect) et
+     'nouvelle_reponse' (dès qu'une réponse Magos est écrite).
+     Plus de polling périodique.
    ========================================================= */
 
 (function () {
   "use strict";
 
-  var POLL_MS = 4000;          // intervalle de rafraîchissement
   var TYPING_INDICATOR_MS = 1200; // durée simulation frappe Magos
 
   var chatLog = document.getElementById("chat-log");
@@ -42,9 +43,13 @@
 
   // Affiche une bulle (avec fade-in via classe CSS)
   function appendBubble(entry) {
+    if (!entry || !entry.id) entry = Object.assign({}, entry, { id: "x" + Math.random() });
     var isMagos = entry.de === "magos";
     var row = document.createElement("div");
     row.className = "bubble-row " + (isMagos ? "magos" : "visiteur");
+    // dédupe par id si déjà rendu
+    if (renderedIds.has(entry.id)) return;
+    renderedIds.add(entry.id);
 
     var who = isMagos ? "Magos" : (entry.nom && entry.nom.trim() ? entry.nom.trim() : "Visiteur");
 
@@ -115,28 +120,7 @@
     if (typingTimer) { clearTimeout(typingTimer); typingTimer = null; }
   }
 
-  // Charge l'historique fusionné et rend les nouvelles entrées
-  function refresh() {
-    fetch("/api/contact", { cache: "no-store" })
-      .then(function (r) { return r.json(); })
-      .then(function (list) {
-        var newMagos = false;
-        list.forEach(function (entry) {
-          if (!entry || !entry.id) return;
-          if (renderedIds.has(entry.id)) return;
-          renderedIds.add(entry.id);
-          appendBubble(entry);
-          if (entry.de === "magos") newMagos = true;
-        });
-        if (newMagos) hideTyping(); // une vraie réponse est arrivée -> stoppe la simu
-        lastSyncEl.textContent = fmtTime(Date.now() / 1000);
-      })
-      .catch(function () {
-        lastSyncEl.textContent = "échec synchro";
-      });
-  }
-
-  // Envoi d'un message visiteur
+  // Envoi d'un message visiteur (HTTP POST ; le serveur le push aux clients)
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var message = msgInput.value.trim();
@@ -153,16 +137,53 @@
         if (!r.ok) throw new Error("bad status " + r.status);
         msgInput.value = "";
         showTyping(); // simulation : « Le Magos retranscrit… »
-        refresh();
       })
       .catch(function () {
-        var ts = document.getElementById("last-sync");
-        if (ts) ts.textContent = "échec envoi";
+        if (lastSyncEl) lastSyncEl.textContent = "échec envoi";
       })
       .finally(function () { transmitBtn.disabled = false; });
   });
 
-  // Initial + polling
-  refresh();
-  setInterval(refresh, POLL_MS);
+  // --- TEMPS RÉEL via SocketIO ---
+  function markSync() {
+    if (lastSyncEl) lastSyncEl.textContent = fmtTime(Date.now() / 1000) + " (temps réel)";
+  }
+
+  if (window.io) {
+    var socket = io();
+    // Historique complet dès la connexion (plus besoin de polling)
+    socket.on("historique", function (list) {
+      (list || []).forEach(function (entry) { appendBubble(entry); });
+      markSync();
+    });
+    // Nouvelle réponse du Magos poussée en temps réel -> bulle instantanée
+    socket.on("nouvelle_reponse", function (entry) {
+      appendBubble(entry);
+      hideTyping(); // une vraie réponse est arrivée -> stoppe la simu
+      markSync();
+    });
+    // Un autre visiteur a écrit (utile si multi-clients ; ici surtout pour le typing)
+    socket.on("nouveau_visiteur", function (entry) {
+      // On ne rend pas ici : l'émetteur l'a déjà affiché via son propre POST.
+      markSync();
+    });
+    socket.on("connect", function () { markSync(); });
+    socket.on("disconnect", function () {
+      if (lastSyncEl) lastSyncEl.textContent = "canal fermé";
+    });
+  } else {
+    // Fallback (si le CDN SocketIO échoue) : ancien polling
+    console.warn("SocketIO indisponible — repli sur polling.");
+    function refresh() {
+      fetch("/api/contact", { cache: "no-store" })
+        .then(function (r) { return r.json(); })
+        .then(function (list) {
+          (list || []).forEach(function (entry) { appendBubble(entry); });
+          markSync();
+        })
+        .catch(function () { if (lastSyncEl) lastSyncEl.textContent = "échec synchro"; });
+    }
+    refresh();
+    setInterval(refresh, 4000);
+  }
 })();
