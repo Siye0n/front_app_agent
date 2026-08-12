@@ -17,15 +17,31 @@
 
   <header class="hero">
     <div class="hero-aquila" aria-hidden="true">
-      <!-- Aquila (aigle impérial à deux têtes) en filigrane SVG -->
-      <svg viewBox="0 0 200 200" class="aquila-spin">
-        <g fill="none" stroke="#b08d57" stroke-width="3">
-          <circle cx="100" cy="100" r="78" stroke="#9e2b25" stroke-width="2" opacity="0.6"/>
-          <path d="M100 40 L100 160 M60 70 Q100 100 140 70 M60 130 Q100 100 140 130"/>
-          <path d="M100 55 C70 30 35 35 22 60 C45 62 60 80 70 95 C55 78 40 70 28 72 C48 90 70 92 85 88"/>
-          <path d="M100 55 C130 30 165 35 178 60 C155 62 140 80 130 95 C145 78 160 70 172 72 C152 90 130 92 115 88"/>
+      <!-- Aquila (aigle impérial à deux têtes) — SVG redessiné, symétrique -->
+      <svg viewBox="0 0 200 200" class="aquila-hero">
+        <defs>
+          <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="2.2" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g fill="none" stroke="#b08d57" stroke-width="2.4" filter="url(#glow)" stroke-linecap="round" stroke-linejoin="round">
+          <!-- couronne / disque impérial -->
+          <circle cx="100" cy="100" r="74" stroke="#9e2b25" stroke-width="1.6" opacity="0.55"/>
+          <!-- corps central -->
+          <path d="M100 58 L100 150"/>
+          <!-- tête gauche -->
+          <path d="M100 64 C88 50 70 46 60 54 C66 60 74 62 80 66 C72 70 70 78 76 84"/>
+          <!-- tête droite (symétrique) -->
+          <path d="M100 64 C112 50 130 46 140 54 C134 60 126 62 120 66 C128 70 130 78 124 84"/>
+          <!-- aile gauche déployée -->
+          <path d="M100 78 C76 64 44 64 26 84 C44 82 56 92 64 104 C50 100 40 108 34 120 C52 112 64 118 74 128 C82 120 90 116 96 112"/>
+          <!-- aile droite déployée (symétrique) -->
+          <path d="M100 78 C124 64 156 64 174 84 C156 82 144 92 136 104 C150 100 160 108 166 120 C148 112 136 118 126 128 C118 120 110 116 104 112"/>
+          <!-- serres / base -->
+          <path d="M100 150 C92 158 86 160 82 156 M100 150 C108 158 114 160 118 156"/>
         </g>
-        <circle cx="100" cy="100" r="6" fill="#36c46a"/>
+        <circle cx="100" cy="100" r="5" fill="#36c46a" filter="url(#glow)"/>
       </svg>
     </div>
     <h1 class="title">ADEPTUS MECHANICUS</h1>

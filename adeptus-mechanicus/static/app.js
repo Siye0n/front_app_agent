@@ -194,62 +194,68 @@
     setInterval(refresh, POLL_FALLBACK_MS);
   }
 
-  // --- Animation : crâne binaire (☠ dont les pixels affichent 0/1 qui scintillent) ---
-  // Motif crâne : '#' = pixel du crâne, ' ' = vide. Les pixels '#' affichent un 0/1
-  // aléatoire rafraîchi ~140ms -> le crâne semble "fait de binaire".
+  // --- Crâne binaire (☠ forme vectorielle + 0/1 scintillants à l'intérieur) ---
+  // Masque 24x24 : '#' = os du crâne, ' ' = vide (orbites, nez, bouche).
+  // On dessine le contour en glow vert, les orbites en creux, et on fait
+  // défiler des 0/1 dans chaque cellule d'os -> le crâne semble "fait de binaire".
   var SKULL = [
-    "......................",
-    ".......########.......",
-    ".....############.....",
-    "....##############....",
-    "...################...",
-    "..##################..",
-    "..####..######..####..",
-    "..###...######...###..",
-    "..###...######...###..",
-    ".####...######...####.",
-    ".####..########..####.",
-    ".####.##########.####.",
-    ".####.##.##.##..####..",
-    ".####.##.##.##..####..",
-    "..###.##.##.##..###...",
-    "..###..######...###...",
-    "..####.######..####...",
-    "...##..######..##.....",
-    ".......######........",
-    "......##.##.##.......",
-    ".....##..##..##......",
-    "....##...##...##.....",
-    "...##....##....##....",
-    "..##..........##.....",
-    "......................",
-    "......................"
+    "........................",
+    "........########........",
+    "......############......",
+    ".....##############.....",
+    "....################....",
+    "...##################...",
+    "...####..........####...",
+    "..####............####..",
+    "..###....####....####...",
+    "..###...######...####...",
+    ".####..########..####...",
+    ".####..########..####...",
+    ".####...######...####...",
+    "..###....####....####...",
+    "..####..........####....",
+    "...####........####.....",
+    "....################....",
+    ".....##############.....",
+    "......############......",
+    ".......########........",
+    ".......##....##........",
+    ".......##....##........",
+    "........#....#.........",
+    ".........#..#..........."
   ];
 
   function startSkull(canvas) {
     var ctx = canvas.getContext("2d");
     var rows = SKULL.length, cols = SKULL[0].length;
     var cellW = canvas.width / cols, cellH = canvas.height / rows;
-    // Taille de police minimale pour garantir un rendu visible (bug: 0px ne dessine rien)
-    var fontPx = Math.max(4, Math.floor(cellH * 0.95));
+    var fontPx = Math.max(4, Math.floor(cellH * 0.9));
     ctx.font = fontPx + "px 'Share Tech Mono', monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.shadowColor = "#36c46a";
+      ctx.shadowBlur = 6;
       for (var y = 0; y < rows; y++) {
         var line = SKULL[y];
         for (var x = 0; x < cols; x++) {
           if (line[x] === "#") {
             var bit = Math.random() < 0.5 ? "0" : "1";
-            ctx.globalAlpha = 0.55 + Math.random() * 0.45;
+            ctx.globalAlpha = 0.5 + Math.random() * 0.5;
             ctx.fillStyle = "#36c46a";
             ctx.fillText(bit, x * cellW + cellW / 2, y * cellH + cellH / 2);
           }
         }
       }
+      ctx.restore();
+      // Orbites creuses (yeux) : petits disques sombres par-dessus le binaire
       ctx.globalAlpha = 1;
+      ctx.fillStyle = "rgba(5,4,3,0.92)";
+      ctx.beginPath(); ctx.arc(8.5 * cellW, 10 * cellH, cellW * 1.6, 0, 7); ctx.fill();
+      ctx.beginPath(); ctx.arc(15.5 * cellW, 10 * cellH, cellW * 1.6, 0, 7); ctx.fill();
     }
     draw();
     setInterval(draw, 140);

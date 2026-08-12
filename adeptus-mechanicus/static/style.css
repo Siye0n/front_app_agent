@@ -102,8 +102,11 @@ html, body {
   margin: 0 auto 8px;
   opacity: 0.9;
 }
-.aquila-spin { width: 100%; height: 100%; animation: spin 60s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.aquila-hero { width: 100%; height: 100%; animation: aquila-breathe 6s ease-in-out infinite; }
+@keyframes aquila-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.05); opacity: 1; }
+}
 
 .title {
   font-family: "Cinzel", serif;
