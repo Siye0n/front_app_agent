@@ -230,7 +230,9 @@
     var ctx = canvas.getContext("2d");
     var rows = SKULL.length, cols = SKULL[0].length;
     var cellW = canvas.width / cols, cellH = canvas.height / rows;
-    ctx.font = Math.floor(cellH * 0.95) + "px 'Share Tech Mono', monospace";
+    // Taille de police minimale pour garantir un rendu visible (bug: 0px ne dessine rien)
+    var fontPx = Math.max(4, Math.floor(cellH * 0.95));
+    ctx.font = fontPx + "px 'Share Tech Mono', monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
