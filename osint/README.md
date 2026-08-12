@@ -1,24 +1,28 @@
-# OSINT Entreprises — serveur Flask
+# OSINT // SCAN WHOIS — serveur Flask
 
-Petit serveur Flask qui récupère les N (paramétrable, défaut 10, max 50)
-premières entreprises d'une ville et affiche leur **nom**, **adresse** et
-**site web** (si disponible).
+Petit serveur Flask qui prend en entrée un fichier **CSV de domaines** et
+renvoie, pour chacun, son empreinte **WHOIS** (registrar, dates de création /
+expiration, statut, serveurs DNS, contacts, pays). Les résultats s'affichent
+dans un **dashboard futuriste** (thème néon cyber) : cartes métriques +
+tableau cliquable.
 
-Le front-end (HTML/CSS/JS vanilla) appelle l'API du serveur et affiche un
-tableau. Pas de build front.
+Le front-end (HTML/CSS/JS vanilla) appelle l'API du serveur. Pas de build
+front, aucune clé API, aucun secret — `python-whois` interroge en local le
+port 43.
 
 ## Arborescence
 
 ```
 osint/
-├── app.py                 # Serveur Flask + sources de données
-├── requirements.txt       # Dépendances (flask, requests)
+├── app.py                 # Serveur Flask + scan WHOIS (retry auto, max 10)
+├── requirements.txt       # Dépendances (flask, python-whois)
 ├── README.md              # Ce fichier
+├── results.json           # Cache des derniers résultats (ignoré par git)
 ├── templates/
-│   └── index.html         # Page de recherche
+│   └── index.html         # Dashboard futuriste
 └── static/
-    ├── style.css          # Style sobre (thème sombre)
-    └── app.js             # Logique front (fetch + tableau)
+    ├── style.css          # Thème sombre néon / cyber
+    └── app.js             # Upload CSV (drag & drop) + rendu dashboard
 ```
 
 ## Lancer le serveur
@@ -34,65 +38,78 @@ python app.py
 
 Le serveur démarre sur http://127.0.0.1:5000/ (port 5000, `debug=False`).
 
-- Page d'accueil : http://127.0.0.1:5000/
-- API : http://127.0.0.1:5000/api/entreprises
+- Page dashboard : http://127.0.0.1:5000/
+- API scan : http://127.0.0.1:5000/api/scan
+- API résultats : http://127.0.0.1:5000/api/results
 
-## Endpoint API
+## Format du CSV
 
-`GET /api/entreprises`
+Une colonne `domaine` par ligne (un domaine par ligne). Le header est
+optionnel : si une colonne nommée `domaine` est présente, elle est utilisée ;
+sinon la **première colonne** de chaque ligne est prise. Les doublons et les
+lignes vides sont ignorés. Un éventuel `http(s)://` ou chemin résiduel est
+tronqué.
 
-| Paramètre | Type   | Requis | Défaut | Notes                |
-|-----------|--------|--------|--------|----------------------|
-| `ville`   | string | oui    | —      | Ex : `Paris`         |
-| `limit`   | int    | non    | 10     | Borné à 1..50        |
+Exemple `domaines.csv` :
 
-Réponse JSON :
+```csv
+domaine
+google.com
+github.com
+exemple.fr
+```
+
+## Endpoints API
+
+### `POST /api/scan`
+
+Upload multipart, champ fichier : `csv`.
+
+- Pour chaque domaine (unique, non vide) : appel WHOIS avec **retry
+  automatique** (backoff court, max 10 tentatives) en cas d'erreur réseau /
+  timeout.
+- Réponse `200` :
 
 ```json
 {
-  "ville": "Paris",
   "count": 3,
-  "entreprises": [
-    {"nom": "Atlas Solutions", "adresse": "12 rue Victor Hugo, 75001 Paris", "site_web": "https://www.atlassolutions.fr"},
-    {"nom": "Nova Énergie", "adresse": "48 avenue Jean Jaurès, 75002 Paris", "site_web": null},
-    {"nom": "Quantum Digital", "adresse": "5 place des Lilas, 75003 Paris", "site_web": "https://www.quantumdigital.fr"}
+  "domaines_scannes": 3,
+  "scan_at": "2026-08-11T23:31:00+00:00",
+  "resultats": [
+    {
+      "domaine": "google.com",
+      "registrar": "MarkMonitor Inc.",
+      "creation_date": "1997-09-15T04:00:00+00:00",
+      "expiration_date": "2028-09-14T04:00:00+00:00",
+      "status": ["clientUpdateProhibited", "..."],
+      "name_servers": ["ns1.google.com", "ns2.google.com"],
+      "emails": ["abuse@google.com"],
+      "pays": "US",
+      "expiry_state": "active",
+      "erreur": null
+    }
   ]
 }
 ```
 
-En cas de paramètre `ville` manquant, l'API répond `400` avec
-`{"error": "..."}`.
+- Réponse `400` si aucun domaine valide n'est trouvé dans le CSV, ou si le
+  fichier est absent / illisible.
 
-## Sources de données (abstraites)
+Champs `expiry_state` (pour le dashboard) :
+`active` (actif), `soon` (expire sous 60 j), `expired` (déjà expiré),
+`unknown` (date indisponible), `error` (WHOIS indisponible après 10
+tentatives — `erreur` = `"WHOIS indisponible apres 10 tentatives"`).
 
-Le serveur définit une interface `CompanySource` avec deux implémentations.
-La source est choisie **au démarrage** :
+### `GET /api/results`
 
-1. **MockSource** (défaut, aucune clé API) — génère des données de démo
-   **réalistes et déterministes** pour la ville demandée. Un seed dérivé du
-   nom de la ville garantit des résultats reproductibles (ex : `Paris`
-   produit toujours le même jeu). Aucun appel réseau.
-2. **PappersSource** — activée **uniquement** si la variable d'environnement
-   `PAPPERS_API_KEY` est définie. Elle interroge l'API Pappers
-   (`https://api.pappers.fr/v2/recherche`) et mappe les résultats vers
-   `{nom, adresse, site_web}`.
-
-### Activer Pappers
-
-```bash
-export PAPPERS_API_KEY="votre_clé_ici"   # Linux/macOS
-# set PAPPERS_API_KEY=votre_clé_ici      # Windows (cmd)
-# $env:PAPPERS_API_KEY="votre_clé_ici"   # Windows (PowerShell)
-python app.py
-```
-
-Sécurité :
-- Sans clé, Pappers n'est **jamais** appelé (évite toute erreur réseau).
-- La clé API reste **côté serveur** et n'apparaît **jamais** dans la réponse
-  ni côté client.
+Renvoie les derniers résultats scannés (utile pour rafraîchir le dashboard
+sans relancer un scan). Format identique à la clé `resultats` + `count` +
+`domaines_scannes` + `scan_at`.
 
 ## Règles respectées
 
-- Aucune clé API hardcodée (lus via `os.getenv`).
+- Aucune clé API / secret : `python-whois` est une lib locale (port 43).
+- Retry automatique borné (max 10) avec backoff court sur erreurs réseau.
+- `results.json` est ignoré par git (ainsi que `.env` et `.venv/`).
 - Code commenté, docstrings en français sur les fonctions clés.
 - `python app.py` suffit à lancer le serveur.
