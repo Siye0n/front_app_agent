@@ -6,6 +6,7 @@
   const dropzone = document.getElementById("dropzone");
   const fileInput = document.getElementById("csv-input");
   const fileInfo = document.getElementById("file-info");
+  const domainsInput = document.getElementById("domains-input");
   const scanBtn = document.getElementById("scan-btn");
   const clearBtn = document.getElementById("clear-btn");
   const progress = document.getElementById("progress");
@@ -18,11 +19,29 @@
 
   let selectedFile = null;
 
+  /* Active le bouton scan si un fichier est choisi OU des domaines saisis. */
+  function refreshScanState() {
+    const hasDomains = domainsInput && domainsInput.value.trim().length > 0;
+    scanBtn.disabled = !(selectedFile || hasDomains);
+  }
+
   /* ---------- Helpers ---------- */
 
   function setStatus(msg, kind) {
     statusEl.textContent = msg || "";
     statusEl.className = "status" + (kind ? " " + kind : "");
+  }
+
+  let _typeTimer = null;
+  function typeStatus(msg, kind) {
+    if (_typeTimer) clearInterval(_typeTimer);
+    setStatus("", kind);
+    let i = 0;
+    const target = msg || "";
+    _typeTimer = setInterval(function () {
+      statusEl.textContent = target.slice(0, i++);
+      if (i > target.length) { clearInterval(_typeTimer); _typeTimer = null; }
+    }, 12);
   }
 
   function escapeHtml(value) {
@@ -63,8 +82,14 @@
     fileInfo.hidden = false;
     fileInfo.innerHTML = 'Fichier : <span class="name">' + escapeHtml(file.name) +
       "</span> (" + (file.size || 0) + " o)";
-    scanBtn.disabled = false;
+    refreshScanState();
     setStatus("Fichier prêt. Lancez le scan.", "ok");
+  }
+
+  if (domainsInput) {
+    domainsInput.addEventListener("input", function () {
+      refreshScanState();
+    });
   }
 
   dropzone.addEventListener("click", function (e) {
@@ -102,7 +127,8 @@
     fileInput.value = "";
     fileInfo.hidden = true;
     fileInfo.innerHTML = "";
-    scanBtn.disabled = true;
+    if (domainsInput) domainsInput.value = "";
+    refreshScanState();
     progress.hidden = true;
     metricsEl.hidden = true;
     resultsEl.hidden = true;
@@ -114,7 +140,23 @@
   /* ---------- Scan ---------- */
 
   scanBtn.addEventListener("click", function () {
-    if (!selectedFile) return;
+    // Si des domaines sont saisis (sans fichier), on fabrique un CSV synthétique.
+    let fd;
+    if (selectedFile) {
+      fd = new FormData();
+      fd.append("csv", selectedFile, selectedFile.name);
+    } else if (domainsInput && domainsInput.value.trim()) {
+      const text = domainsInput.value
+        .split(/[\n,;\s]+/)          // une ou plusieurs lignes / virgules / espaces
+        .map(function (s) { return s.trim().toLowerCase(); })
+        .filter(Boolean)
+        .join("\n");
+      const blob = new Blob([text], { type: "text/csv" });
+      fd = new FormData();
+      fd.append("csv", blob, "domains.csv");
+    } else {
+      return;
+    }
 
     scanBtn.disabled = true;
     clearBtn.hidden = false;
@@ -122,15 +164,10 @@
     metricsEl.hidden = true;
     resultsEl.hidden = true;
     tbodyEl.innerHTML = "";
-    setStatus("Scan WHOIS en cours…", null);
+    typeStatus("Scan WHOIS en cours…");
 
-    // Le serveur traite tous les domaines d'un coup ; on affiche une
-    // progression "indéterminée" puis on remplit depuis la réponse.
     progressFill.style.width = "20%";
     progressLabel.textContent = "Interrogation WHOIS…";
-
-    const fd = new FormData();
-    fd.append("csv", selectedFile, selectedFile.name);
 
     fetch("/api/scan", { method: "POST", body: fd })
       .then(function (resp) {
@@ -143,12 +180,12 @@
         progressFill.style.width = "100%";
         progressLabel.textContent = data.domaines_scannes + " / " + data.domaines_scannes + " domaines scannés";
         renderDashboard(data);
-        setStatus("Scan terminé : " + data.count + " résultat(s).", "ok");
+        typeStatus("Scan terminé : " + data.count + " résultat(s).", "ok");
       })
       .catch(function (err) {
         progressFill.style.width = "0%";
         progressLabel.textContent = "";
-        setStatus("Erreur réseau : " + err.message, "error");
+        typeStatus("Erreur réseau : " + err.message, "error");
       })
       .finally(function () {
         scanBtn.disabled = false;

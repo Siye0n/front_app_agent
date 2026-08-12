@@ -11,6 +11,7 @@
 </head>
 <body>
   <div class="grid-overlay"></div>
+  <div class="scanline"></div>
 
   <main class="dashboard">
     <header class="dash-header">
@@ -18,8 +19,17 @@
       <p class="subtitle">Analyse de renseignement — empreinte de domaines via protocole WHOIS (port 43)</p>
     </header>
 
-    <!-- Zone d'upload -->
+    <!-- Saisie directe de domaines -->
+    <section class="panel domain-panel">
+      <label class="field-label" for="domains-input">// SAISIE DE DOMAINES</label>
+      <textarea id="domains-input" class="domain-input" rows="3"
+        placeholder="exemple.com&#10;google.com&#10;github.com"></textarea>
+      <p class="field-hint">Un domaine par ligne (ou séparés par des virgules/espaces). Ex : <code>exemple.com</code></p>
+    </section>
+
+    <!-- Zone d'upload CSV -->
     <section class="panel upload-panel">
+      <label class="field-label">// OU IMPORT CSV</label>
       <div id="dropzone" class="dropzone">
         <div class="dropzone-inner">
           <div class="dropzone-icon">⛓</div>

@@ -267,3 +267,95 @@ button.ghost:hover:not(:disabled) { color: var(--text); border-color: var(--cyan
 @media (max-width: 720px) {
   .metrics { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ============ EFFETS FUTURISTES SUPPLÉMENTAIRES ============ */
+
+/* Scanline qui balaye l'écran lentement (CRT/futuriste). */
+.scanline {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(54, 224, 224, 0.035) 50%,
+    transparent 100%
+  );
+  background-size: 100% 6px;
+  mix-blend-mode: screen;
+}
+.scanline::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent, rgba(54, 224, 224, 0.08), transparent);
+  animation: scan-sweep 7s linear infinite;
+}
+@keyframes scan-sweep {
+  0%   { top: -120px; }
+  100% { top: 100%; }
+}
+
+/* Label de champ néon. */
+.field-label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 8px rgba(54, 224, 224, 0.35);
+}
+
+/* Saisie de domaines : textarea néon. */
+.domain-panel { margin-bottom: 1.4rem; }
+.domain-input {
+  width: 100%;
+  min-height: 84px;
+  resize: vertical;
+  background: #060b10;
+  color: var(--text);
+  border: 1px solid #1d3340;
+  border-radius: 8px;
+  padding: 0.7rem 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  box-shadow: inset 0 0 18px rgba(54, 224, 224, 0.06);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.domain-input::placeholder { color: var(--muted); }
+.domain-input:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: inset 0 0 22px rgba(54, 224, 224, 0.12), 0 0 14px rgba(54, 224, 224, 0.35);
+}
+.field-hint { color: var(--muted); font-size: 0.78rem; margin: 0.5rem 0 0; }
+.field-hint code { color: var(--cyan); }
+
+/* Pulse doux sur les cartes métriques au survol. */
+.metric-card { transition: box-shadow 0.25s ease, transform 0.25s ease; }
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 22px rgba(54, 224, 224, 0.18), 0 18px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Lignes du tableau qui apparaissent avec un léger fondu. */
+.results-table tbody tr { animation: row-in 0.4s ease both; }
+@keyframes row-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Halo vivant sur le titre au chargement. */
+@keyframes title-breathe {
+  0%, 100% { text-shadow: 0 0 14px rgba(54, 224, 224, 0.5), 0 0 28px rgba(54, 224, 224, 0.22); }
+  50%      { text-shadow: 0 0 22px rgba(54, 224, 224, 0.8), 0 0 42px rgba(54, 224, 224, 0.4); }
+}
+.dash-header h1 { animation: title-breathe 4.5s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scanline::after, .dash-header h1, .results-table tbody tr { animation: none; }
+}
